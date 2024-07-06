@@ -67,7 +67,7 @@ func (c *channelPool) Get() (net.Conn, error) {
 		return nil, ErrClosed
 	}
 
-	// wrap our connections with out custom net.Conn implementation (wrapConn
+	// wrap our connections without custom net.Conn implementation (wrapConn
 	// method) that puts the connection back to the pool if it's closed.
 	select {
 	case conn := <-conns:

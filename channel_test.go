@@ -21,8 +21,6 @@ func init() {
 	// used for factory function
 	go simpleTCPServer()
 	time.Sleep(time.Millisecond * 300) // wait until tcp server has been settled
-
-	rand.Seed(time.Now().UTC().UnixNano())
 }
 
 func TestNew(t *testing.T) {
@@ -31,6 +29,7 @@ func TestNew(t *testing.T) {
 		t.Errorf("New error: %s", err)
 	}
 }
+
 func TestPool_Get_Impl(t *testing.T) {
 	p, _ := newChannelPool()
 	defer p.Close()
@@ -228,8 +227,9 @@ func TestPoolConcurrent2(t *testing.T) {
 		for i := 0; i < 10; i++ {
 			wg.Add(1)
 			go func(i int) {
+				r := rand.New(rand.NewSource(time.Now().UTC().UnixNano()))
 				conn, _ := p.Get()
-				time.Sleep(time.Millisecond * time.Duration(rand.Intn(100)))
+				time.Sleep(time.Millisecond * time.Duration(r.Intn(100)))
 				conn.Close()
 				wg.Done()
 			}(i)
@@ -239,8 +239,9 @@ func TestPoolConcurrent2(t *testing.T) {
 	for i := 0; i < 10; i++ {
 		wg.Add(1)
 		go func(i int) {
+			r := rand.New(rand.NewSource(time.Now().UTC().UnixNano()))
 			conn, _ := p.Get()
-			time.Sleep(time.Millisecond * time.Duration(rand.Intn(100)))
+			time.Sleep(time.Millisecond * time.Duration(r.Intn(100)))
 			conn.Close()
 			wg.Done()
 		}(i)
